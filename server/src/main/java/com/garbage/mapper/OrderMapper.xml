@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.garbage.mapper.OrderMapper">
+  <resultMap id="BaseResultMap" type="com.garbage.entity.Order">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
+    <result column="total_point" jdbcType="INTEGER" property="totalPoint" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="goods_id" jdbcType="BIGINT" property="goodsId" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+    <result column="goodsName" jdbcType="VARCHAR" property="goodsName" />
+    <result column="userName" jdbcType="VARCHAR" property="userName" />
+    <result column="image" jdbcType="VARCHAR" property="image" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, order_no, total_point, user_id, `status`, goods_id, create_time
+  </sql>
+  <select id="pageQuery" parameterType="com.garbage.entity.Order" resultMap="BaseResultMap">
+    select
+    o.*, g.image AS image,  g.name AS goodsName, u.name AS userName
+    from `order` AS o
+    left join goods AS g on o.goods_id = g.id
+    left join `user` AS u on o.user_id = u.id
+    <where>
+      <if test="goodsName != null and goodsName != ''">
+        and g.name = #{goodsName}
+      </if>
+      <if test="status != null and status != ''">
+        and o.status = #{status}
+      </if>
+      <if test="orderNo != null and orderNo != ''">
+        and o.orderNo = #{orderNo}
+      </if>
+      <if test="goodsId != null and goodsId != ''">
+        and o.goods_id = #{goodsId}
+      </if>
+      <if test="userId != null and userId != ''">
+        and o.user_id = #{userId}
+      </if>
+    </where>
+    order by o.create_time desc
+  </select>
+  <select id="getById" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from `order` AS o
+    where o.id = #{id}
+  </select>
+
+
+  <select id="getMessageByGoodsId" resultMap="BaseResultMap">
+    select o.type, o.content, u.image AS image, u.name AS userName
+    from `order`  AS o
+    left join `user` AS u on o.user_id = u.id
+    where o.goods_id = #{id} and content is not null order by o.create_time desc
+  </select>
+  <delete id="delete" parameterType="java.lang.Long">
+    delete from `order`
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.garbage.entity.Order" useGeneratedKeys="true">
+    insert into `order` (order_no, total_point, user_id,
+      `status`, goods_id, content, type,  create_time
+      )
+    values (#{orderNo,jdbcType=VARCHAR}, #{totalPoint,jdbcType=INTEGER}, #{userId,jdbcType=BIGINT},
+      #{status,jdbcType=VARCHAR}, #{goodsId,jdbcType=BIGINT},#{content,jdbcType=VARCHAR},
+            #{type,jdbcType=CHAR}, #{createTime,jdbcType=VARCHAR}
+      )
+  </insert>
+  <update id="update" parameterType="com.garbage.entity.Order">
+    update `order`
+    <set>
+      <if test="orderNo != null">
+        order_no = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="totalPoint != null">
+        total_point = #{totalPoint,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="status != null">
+        `status` = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsId != null">
+        goods_id = #{goodsId,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        `type` = #{type,jdbcType=CHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

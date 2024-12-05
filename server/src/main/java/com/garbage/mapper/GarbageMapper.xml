@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.garbage.mapper.GarbageMapper">
+  <resultMap id="BaseResultMap" type="com.garbage.entity.Garbage">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="type" jdbcType="CHAR" property="type" />
+    <result column="image" jdbcType="VARCHAR" property="image" />
+    <result column="image" jdbcType="VARCHAR" property="image" />
+    <result column="matched" jdbcType="REAL" property="matched" />
+    <result column="status" jdbcType="CHAR" property="status" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="point" jdbcType="INTEGER" property="point" />
+    <result column="evaluate" jdbcType="VARCHAR" property="evaluate" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+    <result column="userName" jdbcType="VARCHAR" property="userName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, title, `type`, image, `matched`, `status`, user_id, point, evaluate, create_time
+  </sql>
+  <select id="pageQuery" parameterType="com.garbage.entity.Garbage" resultMap="BaseResultMap">
+    select
+    o.*, u.name AS userName
+    from `garbage` AS o
+    left join `user` AS u on o.user_id = u.id
+    <where>
+      <if test="title != null and title != ''">
+        and o.title like "%" #{title} "%"
+      </if>
+      <if test="type != null and type != ''">
+        and o.type = #{type}
+      </if>
+      <if test="status != null and status != ''">
+        and o.status = #{status}
+      </if>
+    </where>
+    order by o.create_time desc
+  </select>
+  <delete id="delete" parameterType="java.lang.Long">
+    delete from garbage
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.garbage.entity.Garbage" useGeneratedKeys="true">
+    insert into garbage (title, `type`, image,
+      `matched`, `status`, user_id, point,
+      evaluate, create_time)
+    values (#{title,jdbcType=VARCHAR}, #{type,jdbcType=CHAR}, #{image,jdbcType=VARCHAR},
+      #{matched,jdbcType=REAL}, #{status,jdbcType=CHAR}, #{userId,jdbcType=BIGINT}, #{point,jdbcType=INTEGER},
+      #{evaluate,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR})
+  </insert>
+  <update id="update" parameterType="com.garbage.entity.Garbage">
+    update garbage
+    <set>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        `type` = #{type,jdbcType=CHAR},
+      </if>
+      <if test="image != null">
+        image = #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="matched != null">
+        `matched` = #{matched,jdbcType=REAL},
+      </if>
+      <if test="status != null">
+        `status` = #{status,jdbcType=CHAR},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="point != null">
+        point = #{point,jdbcType=INTEGER},
+      </if>
+      <if test="evaluate != null">
+        evaluate = #{evaluate,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="getById" parameterType="com.garbage.entity.Garbage" resultMap="BaseResultMap">
+
+    select
+      o.*, u.name AS userName, u.image AS userImage
+    from `garbage` AS o
+           left join `user` AS u on o.user_id = u.id
+    where o.id = #{id}
+  </select>
+
+</mapper>

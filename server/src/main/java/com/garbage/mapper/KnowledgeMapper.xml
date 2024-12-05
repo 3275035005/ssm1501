@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.garbage.mapper.KnowledgeMapper">
+  <resultMap id="BaseResultMap" type="com.garbage.entity.Knowledge">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="image" jdbcType="VARCHAR" property="image" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.garbage.entity.KnowledgeWithBLOBs">
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+    <result column="content1" jdbcType="LONGVARCHAR" property="content1" />
+    <result column="content2" jdbcType="LONGVARCHAR" property="content2" />
+    <result column="content3" jdbcType="LONGVARCHAR" property="content3" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, title, image, create_time
+  </sql>
+  <sql id="Blob_Column_List">
+    content, content1, content2, content3
+  </sql>
+  <select id="pageQuery" parameterType="com.garbage.entity.KnowledgeWithBLOBs" resultMap="ResultMapWithBLOBs">
+    select
+    *
+    from knowledge
+    <where>
+      <if test="title != null and title != ''">
+        and title like "%" #{title} "%"
+      </if>
+    </where>
+    order by create_time desc
+  </select>
+
+  <select id="getById" resultMap="ResultMapWithBLOBs">
+    select
+    *
+    from `knowledge`
+    where id = #{id}
+  </select>
+  <delete id="delete" parameterType="java.lang.Long">
+    delete from knowledge
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.garbage.entity.KnowledgeWithBLOBs" useGeneratedKeys="true">
+    insert into knowledge (title, image, create_time,
+      content, content1, content2,
+      content3)
+    values (#{title,jdbcType=VARCHAR}, #{image,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR},
+      #{content,jdbcType=LONGVARCHAR}, #{content1,jdbcType=LONGVARCHAR}, #{content2,jdbcType=LONGVARCHAR},
+      #{content3,jdbcType=LONGVARCHAR})
+  </insert>
+  <update id="update" parameterType="com.garbage.entity.KnowledgeWithBLOBs">
+    update knowledge
+    <set>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="image != null">
+        image = #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="content1 != null">
+        content1 = #{content1,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="content2 != null">
+        content2 = #{content2,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="content3 != null">
+        content3 = #{content3,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

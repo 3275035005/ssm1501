@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.garbage.mapper.BannerMapper">
+  <resultMap id="BaseResultMap" type="com.garbage.entity.Banner">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="image" jdbcType="VARCHAR" property="image" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, image, remark, create_time
+  </sql>
+  <select id="pageQuery" parameterType="com.garbage.entity.Banner" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from banner
+    order by create_time desc
+  </select>
+  <delete id="delete" parameterType="java.lang.Long">
+    delete from banner
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <select id="getAll"  resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from `banner`
+    order by create_time desc
+  </select>
+
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.garbage.entity.Banner" useGeneratedKeys="true">
+    insert into banner (image, remark, create_time)
+    values (#{image,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR})
+  </insert>
+  <update id="update" parameterType="com.garbage.entity.Banner">
+    update banner
+    <set>
+      <if test="image != null">
+        img = #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

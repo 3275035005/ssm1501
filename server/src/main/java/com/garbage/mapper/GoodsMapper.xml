@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.garbage.mapper.GoodsMapper">
+  <resultMap id="BaseResultMap" type="com.garbage.entity.Goods">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="point" jdbcType="INTEGER" property="point" />
+    <result column="store" jdbcType="INTEGER" property="store" />
+    <result column="praise" jdbcType="INTEGER" property="praise" />
+    <result column="sales" jdbcType="INTEGER" property="sales" />
+    <result column="image" jdbcType="VARCHAR" property="image" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.garbage.entity.Goods">
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, `name`, description, point, store, praise, sales, image, create_time
+  </sql>
+  <sql id="Blob_Column_List">
+    content
+  </sql>
+  <select id="pageQuery" parameterType="com.garbage.entity.Goods" resultMap="BaseResultMap">
+    select
+    *
+    from goods
+    <where>
+      <if test="name != null and name != ''">
+        and name like "%" #{name} "%"
+      </if>
+    </where>
+    order by create_time desc
+  </select>
+  <select id="getById" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from goods
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="delete" parameterType="java.lang.Long">
+    delete from goods
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.garbage.entity.Goods" useGeneratedKeys="true">
+    insert into goods (`name`, description, point,
+      store, praise, sales,
+      image, create_time, content
+      )
+    values (#{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{point,jdbcType=INTEGER},
+      #{store,jdbcType=INTEGER}, #{praise,jdbcType=INTEGER}, #{sales,jdbcType=INTEGER},
+      #{image,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{content,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <update id="update" parameterType="com.garbage.entity.Goods">
+    update `goods`
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="point != null">
+        point = #{point,jdbcType=INTEGER},
+      </if>
+      <if test="store != null">
+        `store` = #{store,jdbcType=INTEGER},
+      </if>
+      <if test="praise != null">
+        praise = #{praise,jdbcType=INTEGER},
+      </if>
+      <if test="sales != null">
+        sales = #{sales,jdbcType=INTEGER},
+      </if>
+      <if test="image != null">
+        image = #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+</mapper>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.garbage.mapper.UserMapper">
+  <resultMap id="BaseResultMap" type="com.garbage.entity.User">
+    <id column="id" jdbcType="BIGINT" property="id"/>
+    <result column="name" jdbcType="VARCHAR" property="name"/>
+    <result column="sex" jdbcType="CHAR" property="sex"/>
+    <result column="age" jdbcType="INTEGER" property="age"/>
+    <result column="username" jdbcType="VARCHAR" property="username"/>
+    <result column="password" jdbcType="VARCHAR" property="password"/>
+    <result column="status" jdbcType="CHAR" property="status"/>
+    <result column="image" jdbcType="VARCHAR" property="image"/>
+    <result column="role" jdbcType="CHAR" property="role"/>
+    <result column="point" jdbcType="INTEGER" property="point"/>
+    <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, `name`, sex, age, username, `password`, `status`,image, `role`, point, create_time
+  </sql>
+  <select id="pageQuery" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from `user`
+    <where>
+      <if test="name != null and name != ''">
+        and name = #{name}
+      </if>
+      <if test="status != null and status != ''">
+        and status = #{status}
+      </if>
+      <if test="role != null and role != ''">
+        and role = #{role}
+      </if>
+    </where>
+    order by create_time desc
+  </select>
+  <select id="getUserByUsername" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from `user` where username = #{username}
+  </select>
+
+  <select id="getById" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from `user` where id = #{id}
+  </select>
+
+  <select id="getAll"  resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from `user` order by create_time desc
+
+  </select>
+    <select id="getRanking" resultMap="BaseResultMap">
+      SELECT
+        u.NAME,
+        u.image,
+        g.point
+      from ( SELECT user_id, sum( point ) AS point FROM garbage WHERE STATUS = '1' GROUP BY user_id ) AS g
+             LEFT JOIN `user` AS u ON g.user_id = u.id
+      ORDER BY
+        g.point DESC
+    </select>
+
+    <delete id="delete" parameterType="long">
+    delete from `user`
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.garbage.entity.User"
+          useGeneratedKeys="true">
+    insert into `user` (`name`, sex, age,
+      username, `password`, `status`,
+      `role`, image, point, create_time)
+    values (#{name,jdbcType=VARCHAR}, #{sex,jdbcType=CHAR}, #{age,jdbcType=INTEGER},
+      #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{status,jdbcType=CHAR},
+      #{role,jdbcType=CHAR},#{image,jdbcType=VARCHAR},#{point,jdbcType=INTEGER}, #{createTime,jdbcType=VARCHAR})
+  </insert>
+  <update id="update" parameterType="com.garbage.entity.User">
+    update `user`
+    <set>
+    <if test="name != null">
+      `name` = #{name,jdbcType=VARCHAR},
+    </if>
+      <if test="sex != null">
+        sex = #{sex,jdbcType=CHAR},
+      </if>
+      <if test="age != null">
+        age = #{age,jdbcType=INTEGER},
+      </if>
+      <if test="username != null">
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+
+      <if test="password != null">
+        `password` = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        `status` = #{status,jdbcType=CHAR},
+      </if>
+      <if test="role != null">
+        `role` = #{role,jdbcType=CHAR},
+      </if>
+      <if test="image != null">
+        `image` = #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="point != null">
+        `point` = #{point,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=VARCHAR}
+      </if>
+
+    </set>
+
+
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
